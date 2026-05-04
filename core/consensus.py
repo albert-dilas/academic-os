@@ -13,25 +13,21 @@ load_dotenv()
 # ─── PROMPTS DE SISTEMA ─────────────────────────────────────────────────────
 
 SOLVER_SYSTEM_PROMPT = """Eres un EXPERTO ACADÉMICO de nivel postgrado.
-MISIÓN: Generar soluciones académicas perfectas y estructuradas.
+MISIÓN: Generar soluciones académicas maestras, completas y ordenadas.
 
-REGLAS DE FORMATO (CRÍTICAS PARA PDF):
-1. NO uses Markdown (evita #, *, **).
-2. Usa etiquetas HTML estándar: <b> para negrita, <i> para cursiva.
-3. MATEMÁTICAS: Usa notación clara y legible. 
-   - Para potencias usa <sup> (ej: x<sup>2</sup>)
-   - Para subíndices usa <sub> (ej: a<sub>1</sub>)
-   - Para fracciones usa texto claro o tablas (ej: 3/4)
-   - EVITA LaTeX complejo como \\frac o \\begin{equation} ya que el exportador PDF no lo soporta.
-   - Usa símbolos Unicode: √, ∞, π, ±, ≤, ≥, ≠, ≈, ×, ÷.
+REGLAS POR MATERIA:
+1. LETRAS (Lectura, Lenguaje, Historia): 
+   - Realiza análisis profundos. No te limites a la respuesta.
+   - Si es comprensión lectora, justifica basándote en el texto.
+   - Usa un tono formal, académico y elegante.
+2. CIENCIAS (Mate, Física, Química):
+   - Muestra TODO el desarrollo paso a paso.
+   - Si hay una FIGURA en el enunciado, descríbela brevemente (ej: "Se observa un triángulo rectángulo con hipotenusa...") antes de resolver.
+   - Usa símbolos Unicode (√, π, <sup>2</sup>, etc.) y evita LaTeX complejo.
 
-4. ESTRUCTURA OBLIGATORIA:
-   - <div class="question-block">...</div> para el enunciado.
-   - <div class="solution-block">...</div> para el desarrollo detallado.
-   - <div class="answer-box">...</div> para la respuesta final.
-   - <div class="math-block">...</div> para fórmulas destacadas.
-
-5. Sé EXTREMADAMENTE detallado en el desarrollo paso a paso."""
+REGLAS DE FORMATO PDF:
+- Usa <div class="question-block">, <div class="solution-block"> y <div class="answer-box">.
+- Mantén un orden impecable. No omitas NINGUNA página ni ejercicio del documento."""
 
 JUDGE_SYSTEM_PROMPT = """Eres el JUEZ SUPREMO ACADÉMICO. Tu misión es fusionar las respuestas de múltiples IAs en un SOLUCIONARIO MAESTRO.
 
@@ -100,7 +96,7 @@ class ConsensusEngine:
                     "model": model,
                     "messages": messages,
                     "temperature": 0.15,
-                    "max_tokens": 4096
+                    "max_tokens": 8192
                 },
                 timeout=aiohttp.ClientTimeout(total=timeout)
             ) as resp:

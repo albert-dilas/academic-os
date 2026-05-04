@@ -13,27 +13,27 @@ class HTMLAuditor:
     @staticmethod
     def strip_markdown(content: str) -> str:
         """
-        Extrae HTML puro de respuestas envueltas en bloques markdown.
-        Ejemplo: ```html\\n<div>...</div>\\n``` -> <div>...</div>
+        Limpia bloques markdown y etiquetas HTML duplicadas (<html>, <body>, <head>).
         """
         stripped = content.strip()
 
-        # Patron completo: ```html ... ``` o ``` ... ```
+        # 1. Quitar bloques markdown
         md_match = re.match(r'^```(?:html)?\s*\n?(.*?)\n?```\s*$', stripped, re.DOTALL)
         if md_match:
-            return md_match.group(1).strip()
+            stripped = md_match.group(1).strip()
+        else:
+            stripped = re.sub(r'^```(?:html)?', '', stripped)
+            stripped = re.sub(r'```$', '', stripped).strip()
 
-        # Solo marcador de apertura
-        if stripped.startswith('```html'):
-            stripped = stripped[7:].lstrip()
-        elif stripped.startswith('```'):
-            stripped = stripped[3:].lstrip()
+        # 2. Quitar etiquetas HTML completas si el LLM las incluyo
+        stripped = re.sub(r'<!DOCTYPE.*?>', '', stripped, flags=re.DOTALL | re.IGNORECASE)
+        stripped = re.sub(r'<html.*?>', '', stripped, flags=re.DOTALL | re.IGNORECASE)
+        stripped = re.sub(r'</html>', '', stripped, flags=re.IGNORECASE)
+        stripped = re.sub(r'<head.*?>.*?</head>', '', stripped, flags=re.DOTALL | re.IGNORECASE)
+        stripped = re.sub(r'<body.*?>', '', stripped, flags=re.DOTALL | re.IGNORECASE)
+        stripped = re.sub(r'</body>', '', stripped, flags=re.IGNORECASE)
 
-        # Solo marcador de cierre
-        if stripped.endswith('```'):
-            stripped = stripped[:-3].rstrip()
-
-        return stripped
+        return stripped.strip()
 
     @staticmethod
     def audit_content(content: str) -> tuple:
