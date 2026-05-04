@@ -1,15 +1,19 @@
-# Academic-OS V5.0: Sistema de Inteligencia Académica Autónoma
+# Academic-OS V5.1: Ecosistema de Inteligencia Académica Autónoma
 
-## Objetivo
-El **Academic-OS** es una plataforma diseñada para la resolución de alta fidelidad de tareas, exámenes y problemas académicos complejos. Su meta es entregar soluciones con grado de excelencia (40/40) utilizando razonamiento humano avanzado y visión artificial.
+## 🎯 Objetivo Estratégico
+**Academic-OS** es una plataforma de vanguardia diseñada para la resolución de alta fidelidad de tareas, exámenes y problemas académicos de nivel superior. El sistema no solo busca responder, sino generar **solucionarios de grado premium** (PDF compilados) con rigor matemático absoluto y análisis crítico profundo.
 
-## Cómo Funciona
-1. **Recepción Multimodal**: El sistema recibe texto, fotos o audios a través del Agente de Telegram.
-2. **Razonamiento Omega**: El motor procesa la información usando un consenso entre modelos de lenguaje (Gemini + Claude) para evitar errores.
-3. **Visión Óptica**: Analiza imágenes y diagramas técnicos, convirtiéndolos en lenguaje matemático (LaTeX).
-4. **Auditoría de Calidad**: Un verificador interno revisa que la solución sea completa, ordenada y académicamente impecable antes de entregarla.
+## 🛠️ Arquitectura de Funcionamiento
+1.  **Recepción Multimodal**: Procesamiento asíncrono de texto, imágenes, audios y documentos PDF complejos.
+2.  **Enrutamiento Semántico**: Clasificación inteligente entre interacciones conversacionales y resolución técnica para optimizar recursos.
+3.  **Consenso de Agentes**: Un motor de debate entre múltiples modelos de lenguaje (GPT-4o, Claude 3.5, Gemini 1.5 Pro) que elimina alucinaciones y sesgos.
+4.  **Auditoría de Salida**: Un verificador de calidad basado en reglas estrictas de HTML y LaTeX que valida cada respuesta antes de su entrega.
 
-## Contexto Técnico
-- **Cerebro**: Integración híbrida vía OpenRouter y Groq (Whisper).
-- **Canal Maestro**: Bot de Telegram (@tdsoficialbot).
-- **Persistencia**: Sistema de resurrección autónomo para operación 24/7.
+## 🚀 Ecosistema Técnico
+*   **Núcleo**: Inferencia distribuida vía OpenRouter y Groq.
+*   **Interfaz**: Bot de Telegram de alto rendimiento.
+*   **Despliegue**: Preparado para operación 24/7 en servidores Cloud (Render) o infraestructura local con monitoreo de salud.
+*   **Visión**: Rasterización de documentos para análisis visual profundo de ecuaciones y diagramas.
+
+---
+*Comprometidos con la excelencia académica automatizada.*

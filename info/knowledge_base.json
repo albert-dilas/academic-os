@@ -1,55 +1,45 @@
 {
   "system_name": "Academic-OS",
-  "version": "5.0.0-SUPREME",
-  "architecture_type": "Modular Agentic AI System",
-  "core_philosophy": "Academic excellence via multi-model consensus and autonomous verification.",
+  "version": "5.1.0-STABLE",
+  "architecture_type": "Autonomous Multi-Agent Ecosytem",
+  "core_philosophy": "Maximum academic rigor through asynchronous multi-model consensus and automated quality auditing.",
   "components": {
-    "bot_layer": {
-      "path": "/bot/main_bot.py",
-      "purpose": "Primary I/O interface using Telegram Bot API.",
-      "capabilities": ["vision", "voice_transcription", "topic_handling", "file_processing"],
-      "dependencies": ["telebot", "intelligence.py"]
+    "interface_layer": {
+      "path": "bot/bot.py",
+      "purpose": "Asynchronous Telegram I/O controller.",
+      "capabilities": ["Vision", "Voice Transcription", "PDF Parsing", "Memory Persistence"],
+      "technologies": ["telebot-async", "aiohttp"]
     },
-    "intelligence_layer": {
-      "path": "/core/intelligence.py",
-      "logic": "Omega Reasoning Protocol",
-      "models": {
-        "primary": "google/gemini-2.0-flash-001 (Multimodal & Speed)",
-        "secondary": "anthropic/claude-3.5-sonnet (High-fidelity reasoning)",
-        "audio": "groq/whisper-large-v3 (Sub-second transcription)"
-      },
-      "features": ["Deep Chain-of-Thought", "Latex-Strict formatting", "SVG/Mermaid visualization"]
+    "reasoning_engine": {
+      "path": "core/llm_provider.py",
+      "role": "Unified Inference Provider",
+      "logic": "Dynamic Model Routing",
+      "features": ["Deep Chain-of-Thought", "LaTeX-Strict formatting", "SVG/Mermaid visualization"]
     },
-    "consensus_engine": {
-      "path": "/core/consensus.py",
-      "function": "Dual-model arbitration",
-      "process": "Queries Primary and Secondary models, passes outputs to an internal Judge Layer to synthesize the most accurate answer."
+    "consensus_layer": {
+      "path": "core/consensus.py",
+      "function": "Multi-Model Arbitration Engine",
+      "process": "Queries multiple high-fidelity models (Gemini, Claude, Llama) and synthesizes the final response via a Supreme Auditor agent."
     },
-    "verification_layer": {
-      "path": "/core/verifier.py",
-      "standard": "40/40 Academic Perfect Score",
-      "metrics": ["completeness", "formatting_integrity", "mathematical_consistency", "svg_validation"]
+    "quality_auditor": {
+      "path": "core/auditor.py",
+      "standard": "Premium Academic Output",
+      "metrics": ["HTML Integrity", "Mathematical Consistency", "Visual Clarity", "Logical Flow"]
     },
-    "resurrection_system": {
-      "path": "/resurreccion.ps1",
-      "role": "Autonomous Watchdog",
-      "strategy": "Infinite loop process monitoring with exponential backoff on failure.",
-      "environment": "Windows PowerShell / Local Python Environment"
+    "persistence_monitor": {
+      "path": "scripts/watchdog.ps1",
+      "role": "High-Availability Watchdog",
+      "strategy": "Continuous process health monitoring for 24/7 local operation."
     }
   },
-  "data_flow": {
-    "input": "User (Telegram) -> Bot Layer -> Intelligence Layer (Consensus)",
-    "processing": "Consensus -> Verifier Layer -> Self-Correction Loop (if failed)",
-    "output": "Markdown Response (Telegram) + Persistent Storage (archivos/)"
+  "operational_flow": {
+    "routing": "Semantic Router -> (Chat | Academic Task)",
+    "processing": "Consensus -> Auditor -> Feedback Loop -> Final Output",
+    "delivery": "Rich Text (Telegram) + Compiled PDF Documents"
   },
-  "security_protocols": {
-    "access_control": "Hard-coded Master Chat ID filtering.",
-    "api_failover": "Automatic fallback from OpenRouter to Groq on 5xx or latency > 10s."
-  },
-  "metadata": {
-    "author": "Antigravity AI Agent",
-    "owner": "Albert",
-    "deployment": "Local PC Environment",
-    "state": "Production-Ready / Fully Audited"
+  "deployment": {
+    "cloud": "Render (Web Service Tier)",
+    "local": "Python 3.11.x + Watchdog Script",
+    "ci_cd": "GitHub Repository Synchronization"
   }
 }

@@ -1,5 +1,7 @@
 # Academic-OS V5.1 (Autonomous Multi-Agent System)
 
+![Academic-OS Banner](docs/assets/banner.png)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/albert-dilas/academic-os/graphs/commit-activity)
@@ -21,13 +23,18 @@ Academic-OS es un ecosistema robótico autónomo diseñado para operar 24/7 como
 ---
 
 ## 🌟 Características Principales
+
+![Bot Mockup](docs/assets/mockup.png)
 *   **Enrutador Semántico:** Distingue inteligentemente entre charla trivial y problemas complejos para optimizar tokens y tiempos de respuesta.
 *   **Consenso de LLMs Avanzado:** Usa un Juez Supremo para verificar, auditar y limpiar los resultados antes de entregarlos al usuario.
 *   **Soporte Multimodal Asíncrono:** Extrae texto de imágenes, rasteriza páginas de archivos PDF de gran volumen y transcribe audio en paralelo sin bloquear el bot.
 *   **Exportación Premium:** Genera hojas de respuesta compiladas en formato `.pdf` con soporte nativo para bloques de MathJax.
 
-## Arquitectura de Componentes
-*   `bot.py`: Punto de entrada asíncrono y gestor de eventos de Telegram.
+## 🏗️ Arquitectura Técnica
+
+![System Architecture](docs/assets/architecture.png)
+
+*   `bot/bot.py`: Punto de entrada asíncrono y gestor de eventos de Telegram.
 *   `core/engine.py`: Motor de flujo lógico.
 *   `core/llm_provider.py`: Proveedor unificado de inferencia de IA.
 *   `core/consensus.py`: Motor de consenso y auditoría estructural múltiple.
