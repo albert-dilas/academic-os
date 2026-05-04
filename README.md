@@ -1,12 +1,26 @@
-# Academic-OS V5.1 (Async Multi-Agent System)
+# Academic-OS V5.1 (Autonomous Multi-Agent System)
 
-![Estado](https://img.shields.io/badge/Estado-Producción-success)
-![Versión](https://img.shields.io/badge/Versión-5.1-blue)
-![Arquitectura](https://img.shields.io/badge/Arquitectura-Asíncrona-orange)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/albert-dilas/academic-os/graphs/commit-activity)
+[![Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?logo=render&logoColor=white)](https://render.com)
 
-Un sistema robótico diseñado para operar 24/7 en Telegram. Es un motor de tutoría avanzada especializado tanto en ciencias/matemáticas rigurosas (solucionarios LaTeX/PDF) como en análisis de letras y actualidad. Cuenta con memoria a corto plazo, router semántico y soporte multimodal (Imágenes, Audios, Documentos PDF).
+Academic-OS es un ecosistema robótico autónomo diseñado para operar 24/7 como tutor experto en Telegram. Utiliza una arquitectura de **consenso multi-modelo** para garantizar el máximo rigor en tareas de ciencias, matemáticas y letras.
 
-## Características Principales
+---
+
+## 🚀 Tabla de Contenidos
+*   [Características Principales](#-características-principales)
+*   [Arquitectura Técnica](#-arquitectura-técnica)
+*   [Configuración de Modelos (Universalidad)](#-configuración-de-modelos-universalidad)
+*   [Guía de Despliegue Cloud (24/7 Gratis)](#-guía-de-despliegue-cloud-247-gratis)
+*   [Instalación Local](#-instalación-local)
+*   [Seguridad](#-seguridad)
+*   [Contribución](#-contribución)
+
+---
+
+## 🌟 Características Principales
 *   **Enrutador Semántico:** Distingue inteligentemente entre charla trivial y problemas complejos para optimizar tokens y tiempos de respuesta.
 *   **Consenso de LLMs Avanzado:** Usa un Juez Supremo para verificar, auditar y limpiar los resultados antes de entregarlos al usuario.
 *   **Soporte Multimodal Asíncrono:** Extrae texto de imágenes, rasteriza páginas de archivos PDF de gran volumen y transcribe audio en paralelo sin bloquear el bot.
@@ -53,4 +67,13 @@ Dado que el bot usa OpenRouter como proveedor, **no estás limitado a ningún mo
 4. Ejecuta `python bot/bot.py` o corre el script local de alta disponibilidad: `./scripts/watchdog.ps1`.
 
 ---
-*Desarrollado para la resolución de tareas académicas complejas sin intervencion humana.*
+
+## 🛡️ Seguridad
+*   **Variables de Entorno:** El archivo `.env` está explícitamente excluido vía `.gitignore` para prevenir fugas de API Keys.
+*   **Sanitización:** Los procesos de auditoría internos verifican la calidad de las respuestas antes de la entrega final.
+
+## 🤝 Contribución
+¡Las contribuciones son lo que hacen que la comunidad de código abierto sea un lugar increíble para aprender, inspirar y crear! Cualquier contribución que hagas será **muy apreciada**. Por favor, revisa `CONTRIBUTING.md` para más detalles.
+
+---
+*Desarrollado para la resolución de tareas académicas complejas sin intervención humana.*
