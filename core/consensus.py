@@ -81,7 +81,7 @@ class ConsensusEngine:
     def _get_primary_model(self):
         return os.getenv("PRIMARY_MODEL", "google/gemini-2.0-flash-001")
 
-    async def _fetch_model(self, model: str, messages: list, session: aiohttp.ClientSession, timeout: int = 90) -> str | None:
+    async def _fetch_model(self, model: str, messages: list, session: aiohttp.ClientSession, timeout: int = 300) -> str | None:
         """Consulta un modelo y retorna su respuesta."""
         try:
             async with session.post(

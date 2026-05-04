@@ -90,12 +90,16 @@ async def handle_input(message):
             prompt_text = message.caption if message.caption else f"Analiza este documento: {file_name}"
             
             if file_name.endswith('.pdf'):
-                await bot.edit_message_text("👁️ _Rasterizando PDF y extrayendo contenido..._", chat_id, status_msg.message_id, parse_mode="Markdown")
+                await bot.edit_message_text("👁️ _Rasterizando PDF y extrayendo contenido completo..._", chat_id, status_msg.message_id, parse_mode="Markdown")
                 base64_images, pdf_text = await asyncio.to_thread(PDFParser.extract_full_content, temp_path)
                 image_urls.extend(base64_images)
-                # Enriquecer el prompt con el texto digital del PDF
-                if pdf_text.strip():
-                    prompt_text = f"{prompt_text}\n\n[CONTENIDO DIGITAL DEL DOCUMENTO]:\n{pdf_text[:4000]}"
+                
+                # Enviar TODO el texto y forzar resolución total
+                prompt_text = (
+                    f"IMPORTANTE: Este es un examen de {len(base64_images)} páginas. "
+                    "DEBES resolver TODAS las secciones y preguntas sin omitir NINGUNA. "
+                    f"\n\n[TEXTO EXTRAÍDO]:\n{pdf_text}"
+                )
                 
             output_html, output_pdf = await engine.solve_task(chat_id, prompt_text, image_urls=image_urls if image_urls else None)
             os.remove(temp_path)

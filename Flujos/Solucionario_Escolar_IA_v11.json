@@ -1,0 +1,331 @@
+{
+  "name": "🎓 Solucionario IA v11 - Arquitectura de Áreas 2.5",
+  "active": false,
+  "nodes": [
+    {
+      "id": "webhook-upload",
+      "name": "Webhook Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "webhookId": "solucionario-v11-upload",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "solucionario-upload",
+        "responseMode": "lastNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      }
+    },
+    {
+      "id": "normalizar",
+      "name": "Normalizar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ],
+      "parameters": {
+        "jsCode": "t               ry {\n  const binaries = $input.first().binary || {};\n  const bin = binaries.data || binaries.file || binaries[Object.keys(binaries)[0]];\n  if (!bin) throw new Error('Sin archivo adjunto.');\n  const mime = (bin.mimeType || 'application/pdf').split(';')[0].trim();\n  const allowed = ['application/pdf','image/jpeg','image/png','image/webp'];\n  if (!allowed.includes(mime)) throw new Error('Tipo no soportado: ' + mime);\n\n  let apiKey = 'AIzaSyAZIGKq7uaoRMS9-GYiTf_ul81pkCwoJew';\n  const bodyParams = $input.first().json.body;\n  if (bodyParams && bodyParams.apiKey && bodyParams.apiKey.trim() !== '') {\n    apiKey = bodyParams.apiKey.trim();\n  }\n\n  return [{ json: { fileName: bin.fileName||'doc.pdf', mimeType: mime, apiKey: apiKey }, binary: { data: bin } }];\n} catch(e) { throw new Error('❌ Normalizar: ' + e.message); }"
+      }
+    },
+    {
+      "id": "upload-gemini",
+      "name": "Upload Gemini Files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        400,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 10000,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/upload/v1beta/files?uploadType=media&key=' + $json.apiKey }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-Upload-Protocol",
+              "value": "raw"
+            },
+            {
+              "name": "X-Goog-Upload-Header-Content-Type",
+              "value": "={{ $json.mimeType }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {
+          "timeout": 300000
+        }
+      }
+    },
+    {
+      "id": "prompt-mapeo",
+      "name": "Prompt Mapeo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nconst uri = (r.file && r.file.uri) ? r.file.uri : r.uri;\nif (!uri) throw new Error('No se obtuvo URI de Gemini.');\nconst mime = $('Normalizar').first().json.mimeType;\nconst apiKey = $('Normalizar').first().json.apiKey;\n\nconst body = {\n  system_instruction: { parts: [{ text: 'Mapeador de exámenes. Responde SOLO JSON válido.' }] },\n  contents: [{ parts: [\n    { file_data: { mime_type: mime, file_uri: uri } },\n    { text: 'Identifica cuántas preguntas hay en total y a qué curso pertenece cada una.\\nNO extraigas el texto de las preguntas ahora.\\n\\nResponde SOLO este JSON:\\n{\\n \"total\": 20,\\n \"lista\": [ { \"id\": 1, \"curso\": \"Nombre\" }, ... ]\\n}' }\n  ]}],\n  generationConfig: {\n    temperature: 0.1,\n    maxOutputTokens: 2000,\n    responseMimeType: 'application/json'\n  }\n};\n\nreturn [{ json: { requestBody: JSON.stringify(body), fileUri: uri, mimeType: mime, apiKey: apiKey } }];"
+      }
+    },
+    {
+      "id": "gemini-mapeo",
+      "name": "Gemini Mapeo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 65000,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + $json.apiKey }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.requestBody }}",
+        "options": {
+          "timeout": 300000
+        }
+      }
+    },
+    {
+      "id": "crear-batches",
+      "name": "Crear Batches (Áreas)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const resp = $input.first().json;\nconst raw = resp.candidates?.[0]?.content?.parts?.[0]?.text;\nif (!raw) throw new Error('Respuesta vacía de Gemini Mapeo');\n\nconst mapData = JSON.parse(raw.replace(/```json\\s*/gi,'').replace(/```\\s*/gi,'').trim());\nconst lista = mapData.lista || [];\nif (!lista.length) throw new Error('No se encontraron preguntas en el mapeo.');\n\nconst fileUri = $('Prompt Mapeo').first().json.fileUri;\nconst mimeType = $('Prompt Mapeo').first().json.mimeType;\nconst apiKey = $('Prompt Mapeo').first().json.apiKey;\n\n// Dividir en bloques de 8 preguntas (seguro para 2.5-flash con thinking)\nconst size = 8;\nconst lotes = [];\nfor (let i = 0; i < lista.length; i += size) {\n  const slice = lista.slice(i, i + size);\n  lotes.push({ json: { \n    bloque_num: Math.floor(i/size)+1, \n    ids: slice.map(x => x.id), \n    cursos: slice.map(x => x.curso), \n    fileUri, mimeType, apiKey \n  } });\n}\n\nreturn lotes;"
+      }
+    },
+    {
+      "id": "prompt-batch",
+      "name": "Prompt Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const { ids, cursos, fileUri, mimeType, apiKey } = $input.item.json;\n\nconst rando = ids.join(', ');\n\nconst body = {\n  system_instruction: { parts: [{ text: `Profesor experto. Responde SOLO JSON válido.` }] },\n  contents: [{ parts: [\n    { file_data: { mime_type: mimeType, file_uri: fileUri } },\n    { text: `Localiza en el documento las preguntas con estos IDs: ${rando}.\\nExtráelas y resuélvelas.\\n\\nREGLAS:\\n- Ciencias: LaTeX inline $formula$, máx 3 pasos.\\n- Letras: Justificación 1 línea.\\n- Incluye el texto original de la pregunta.\\n\\nJSON (soluciones:[]):` }\n  ]}],\n  generationConfig: {\n    temperature: 0.1,\n    maxOutputTokens: 8192,\n    responseMimeType: 'application/json',\n    responseSchema: {\n      type: 'OBJECT',\n      properties: {\n        soluciones: {\n          type: 'ARRAY',\n          items: {\n            type: 'OBJECT',\n            properties: {\n              ID_Secuencial: { type: 'INTEGER' },\n              Curso: { type: 'STRING' },\n              Pregunta_Texto: { type: 'STRING' },\n              Desarrollo: { type: 'STRING' },\n              Respuesta_Final: { type: 'STRING' }\n            },\n            required: ['ID_Secuencial','Curso','Pregunta_Texto','Desarrollo','Respuesta_Final']\n          }\n        }\n      },\n      required: ['soluciones']\n    }\n  }\n};\n\nreturn [{ json: { requestBody: JSON.stringify(body), apiKey } }];"
+      }
+    },
+    {
+      "id": "gemini-batch",
+      "name": "Gemini Batch Solucion",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1400,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 65000,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + $json.apiKey }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.requestBody }}",
+        "options": {
+          "timeout": 300000
+        }
+      }
+    },
+    {
+      "id": "parsear-batch",
+      "name": "Parsear Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const resp = $input.item.json;\ntry {\n  const raw = resp.candidates?.[0]?.content?.parts?.[0]?.text;\n  const solData = JSON.parse(raw.replace(/```json\\s*/gi,'').replace(/```\\s*/gi,'').trim());\n  return [{ json: { soluciones: solData.soluciones || [] } }];\n} catch(e) {\n  return [{ json: { soluciones: [], error: e.message } }];\n}"
+      }
+    },
+    {
+      "id": "consolidar",
+      "name": "Consolidar HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const todos = $input.all().map(i => i.json);\nconst sols = todos.flatMap(t => t.soluciones);\n\nconst cursosMap = {};\nsols.forEach(s => {\n  const c = s.Curso || 'General';\n  if (!cursosMap[c]) cursosMap[c] = [];\n  cursosMap[c].push(s);\n});\n\nconst COLORES = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];\nconst cursosHtml = Object.entries(cursosMap).map(([curso, items], idx) => {\n  const color = COLORES[idx % COLORES.length];\n  const divs = items.map(s => `\n    <div class=\"si\">\n      <div class=\"sn\">#${s.ID_Secuencial}</div>\n      <div class=\"sq\">${String(s.Pregunta_Texto).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>\n      <div class=\"sd\">${String(s.Desarrollo).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>\n      <div class=\"sa\">✅ <strong>${String(s.Respuesta_Final).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</strong></div>\n    </div>`).join('');\n  return `<div class=\"cb\" style=\"border-top:4px solid ${color}\">\n    <div class=\"ct\" style=\"background:${color}\">${curso} <span class=\"badge\">${items.length}</span></div>\n    <div class=\"sl\">${divs}</div>\n  </div>`;\n}).join('');\n\nconst html = `<!DOCTYPE html><html><head><meta charset=\"UTF-8\">\n<script>window.MathJax={tex:{inlineMath:[['$','$']]}};<\\/script>\n<script async src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js\"><\\/script>\n<style>\nbody{font-family:Arial,sans-serif;max-width:960px;margin:30px auto;padding:20px;background:#f1f5f9;color:#1e293b}\nh1{text-align:center;font-size:1.6rem}\n.cb{background:#fff;border-radius:10px;margin-bottom:18px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)}\n.ct{color:#fff;padding:11px 18px;font-weight:700;display:flex;justify-content:space-between}\n.badge{background:rgba(255,255,255,.25);padding:1px 10px;border-radius:99px}\n.sl{padding:18px}\n.si{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #f1f5f9}\n.sn{font-size:.7rem;color:#94a3b8;margin-bottom:6px}\n.sq{font-size:.8rem;color:#64748b;margin-bottom:6px;font-style:italic}\n.sd{font-size:.9rem;line-height:1.7;white-space:pre-wrap}\n.sa{margin-top:10px;padding:9px 14px;background:#dcfce7;border-left:4px solid #22c55e;border-radius:0 7px 7px 0}\n</style></head><body><h1>🎓 Solucionario IA v11</h1>${cursosHtml}</body></html>`;\n\nreturn [{ json: { html_content: html, total: sols.length } }];"
+      }
+    },
+    {
+      "id": "respuesta-webhook",
+      "name": "Respuesta Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: $input.first().json }];"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Upload": {
+      "main": [
+        [
+          {
+            "node": "Normalizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar": {
+      "main": [
+        [
+          {
+            "node": "Upload Gemini Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Gemini Files": {
+      "main": [
+        [
+          {
+            "node": "Prompt Mapeo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Mapeo": {
+      "main": [
+        [
+          {
+            "node": "Gemini Mapeo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Mapeo": {
+      "main": [
+        [
+          {
+            "node": "Crear Batches (Áreas)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Batches (Áreas)": {
+      "main": [
+        [
+          {
+            "node": "Prompt Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Batch": {
+      "main": [
+        [
+          {
+            "node": "Gemini Batch Solucion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Batch Solucion": {
+      "main": [
+        [
+          {
+            "node": "Parsear Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Batch": {
+      "main": [
+        [
+          {
+            "node": "Consolidar HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar HTML": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
