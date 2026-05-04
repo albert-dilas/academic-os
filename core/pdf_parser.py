@@ -11,12 +11,13 @@ import os
 
 class PDFParser:
     @staticmethod
-    def extract_images_from_pdf(pdf_path: str, max_pages: int = 15) -> list[str]:
+    def extract_images_from_pdf(pdf_path: str, max_pages: int = 15, output_dir: str = "archivos") -> list[str]:
         """
-        Convierte cada página del PDF en imagen PNG Base64 de alta resolución.
-        Retorna lista de data-URLs listas para enviar a la API de visión.
+        Convierte cada página del PDF en imagen PNG Base64 y guarda el archivo físico.
+        Retorna lista de data-URLs.
         """
         base64_images = []
+        os.makedirs(output_dir, exist_ok=True)
         try:
             doc = fitz.open(pdf_path)
             num_pages = min(len(doc), max_pages)
@@ -24,13 +25,18 @@ class PDFParser:
 
             for page_num in range(num_pages):
                 page = doc.load_page(page_num)
-                # Zoom x2.5 para legibilidad óptima de ecuaciones y texto pequeño
                 mat = fitz.Matrix(2.5, 2.5)
                 pix = page.get_pixmap(matrix=mat)
+                
+                # Guardar imagen física para el PDF
+                img_name = f"ref_page_{page_num + 1}.png"
+                img_path = os.path.join(output_dir, img_name)
+                pix.save(img_path)
+
                 img_data = pix.tobytes("png")
                 b64 = base64.b64encode(img_data).decode("utf-8")
                 base64_images.append(f"data:image/png;base64,{b64}")
-                print(f"[PDF_PARSER] ✅ Página {page_num + 1} rasterizada ({len(img_data) // 1024} KB)")
+                print(f"[PDF_PARSER] ✅ Página {page_num + 1} guardada como {img_name}")
 
             doc.close()
         except Exception as e:
