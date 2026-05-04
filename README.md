@@ -34,6 +34,17 @@ Este repositorio está estructurado para despliegue instantáneo (True Serverles
    * `OPENROUTER_API_KEY` (Token para Gemini/Claude).
    * `GROQ_API_KEY` (Token para Groq Whisper Audio).
    * `ADMIN_CHAT_ID` (Tu ID de Telegram para uso exclusivo).
+   * `PRIMARY_MODEL` (Opcional. Ej: `google/gemini-2.0-flash-001`).
+   * `CONSENSUS_MODELS` (Opcional. Ej: `google/gemini-2.0-flash-001,anthropic/claude-3.5-sonnet`).
+
+## Modelos AI Soportados (Universalidad)
+Dado que el bot usa OpenRouter como proveedor, **no estás limitado a ningún modelo**. Puedes usar modelos gratuitos, de código abierto o premium simplemente cambiando las variables de entorno `PRIMARY_MODEL` y `CONSENSUS_MODELS`.
+* **Para usar IA 100% gratuita:**
+  - `PRIMARY_MODEL=google/gemini-2.0-flash-lite-preview-02-05:free`
+  - `CONSENSUS_MODELS=google/gemini-2.0-flash-lite-preview-02-05:free,meta-llama/llama-3-8b-instruct:free`
+* **Para usar Premium Extremo:**
+  - `PRIMARY_MODEL=openai/gpt-4o`
+  - `CONSENSUS_MODELS=openai/gpt-4o,anthropic/claude-3.5-sonnet`
 
 ## Instalación Local de Desarrollo
 1. Clona el repositorio.

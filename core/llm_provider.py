@@ -46,7 +46,8 @@ class LLMProvider:
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(self.url, headers=headers, json={"model": "google/gemini-2.0-flash-001", "messages": messages}, timeout=30) as resp:
+                model_name = os.getenv("PRIMARY_MODEL", "google/gemini-2.0-flash-001")
+                async with session.post(self.url, headers=headers, json={"model": model_name, "messages": messages}, timeout=30) as resp:
                     data = await resp.json()
                     return data['choices'][0]['message']['content']
         except Exception as e:
@@ -64,7 +65,8 @@ class LLMProvider:
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(self.url, headers=headers, json={"model": "google/gemini-2.0-flash-001", "messages": messages}, timeout=10) as resp:
+                model_name = os.getenv("PRIMARY_MODEL", "google/gemini-2.0-flash-001")
+                async with session.post(self.url, headers=headers, json={"model": model_name, "messages": messages}, timeout=10) as resp:
                     data = await resp.json()
                     return data['choices'][0]['message']['content']
         except Exception as e:

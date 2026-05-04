@@ -12,10 +12,9 @@ class ConsensusEngine:
         self.url = "https://openrouter.ai/api/v1/chat/completions"
 
     async def resolve(self, prompt, chat_id, image_urls=None):
-        models = [
-            "google/gemini-2.0-flash-001",
-            "anthropic/claude-3.5-sonnet"
-        ]
+        # Leer modelos de entorno o usar valores por defecto
+        models_env = os.getenv("CONSENSUS_MODELS", "google/gemini-2.0-flash-001,anthropic/claude-3.5-sonnet")
+        models = [m.strip() for m in models_env.split(",") if m.strip()]
         
         # Cargar memoria de corto plazo
         history = await AsyncMemoryDB.get_history(chat_id)
@@ -56,20 +55,24 @@ Si es LETRAS/COMPRENSIÓN/ACTUALIDAD: Redacta un análisis profundo, bien estruc
         valid_responses = [r for r in responses if r]
 
         # EL VERIFICADOR ELIGE O COMBINA
+        # Mapear dinámicamente las soluciones al prompt según la cantidad de modelos
+        solutions_text = ""
+        for i in range(len(valid_responses)):
+            solutions_text += f"\nSOLUCIÓN {i+1}: {valid_responses[i]}"
+
         verification_prompt = f"""
         Como Juez Supremo, analiza estas soluciones y genera el DOCUMENTO FINAL con estas REGLAS ESTRICTAS:
         1. MATEMÁTICAS/CIENCIAS: Cero soluciones lineales largas. Usa display math. Cero explicaciones narrativas (nada de "Para resolver esto..."). Muestra solo desarrollo matemático directo.
         2. LETRAS/COMPRENSIÓN/ACTUALIDAD: Genera un ensayo/respuesta impecable, estructurado en bloques de lectura clara, profundo y riguroso.
         3. OBLIGATORIO: Devuelve código HTML limpio (<html><body>...</body></html>) para exportar a PDF. Usa MathJax nativo para fórmulas y SVG/Mermaid para visuales.
-        
-        SOLUCIÓN 1: {valid_responses[0] if len(valid_responses) > 0 else 'N/A'}
-        SOLUCIÓN 2: {valid_responses[1] if len(valid_responses) > 1 else 'N/A'}
+        {solutions_text}
         """
         
         async with aiohttp.ClientSession() as session:
             try:
+                model_name = os.getenv("PRIMARY_MODEL", "google/gemini-2.0-flash-001")
                 async with session.post(self.url, headers={"Authorization": f"Bearer {self.api_key}"}, json={
-                    "model": "google/gemini-2.0-flash-001",
+                    "model": model_name,
                     "messages": [{"role": "user", "content": verification_prompt}]
                 }, timeout=30) as resp:
                     data = await resp.json()

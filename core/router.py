@@ -24,8 +24,9 @@ class SemanticRouter:
         
         try:
             async with aiohttp.ClientSession() as session:
+                model_name = os.getenv("PRIMARY_MODEL", "google/gemini-2.0-flash-001")
                 async with session.post(url, headers={"Authorization": f"Bearer {api_key}"}, json={
-                    "model": "google/gemini-2.0-flash-001",
+                    "model": model_name,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.0
                 }, timeout=5) as resp:
