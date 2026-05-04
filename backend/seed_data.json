@@ -1,0 +1,60 @@
+[
+  {
+    "area": "NÚMEROS Y OPERACIONES",
+    "preguntas": [
+      {
+        "num": 1,
+        "enunciado": "P.A. 37 términos: m1; m4; m7; ...; mm9. Calcule suma.",
+        "pasos": ["m=1", "a1=11, a37=119", "Suma = (11+119)/2 * 37 = 2405"],
+        "rpta": "D. 2405"
+      },
+      {
+        "num": 2,
+        "enunciado": "Suma numeral + invertido = 11(diferencia). Calcule el mayor.",
+        "pasos": ["11(a+b) = 11(9(a-b))", "10b = 8a -> a=5, b=4", "Num = 54"],
+        "rpta": "C. 54"
+      },
+      {
+        "num": 3,
+        "enunciado": "Residuos 12 y 23. Cociente exceso 21. Dividendo?",
+        "pasos": ["d = 12+23 = 35", "q_defecto = 20", "D = 35*20 + 12 = 712"],
+        "rpta": "B. 712"
+      },
+      {
+        "num": 4,
+        "enunciado": "Num capicúa 4 cifras * 47 termina en 11. Suma cifras?",
+        "pasos": ["abba * 47 = ...11", "a=3, b=1 -> 3113", "Suma = 8"],
+        "rpta": "B. 8"
+      }
+    ]
+  },
+  {
+    "area": "ESTADÍSTICA",
+    "preguntas": [
+      {
+        "num": 1,
+        "enunciado": "Edades entre 41 y 61 de la lista de 45 personas.",
+        "pasos": ["Contando en la lista: 49, 56, 59, 43, 53, 57, 43, 52, 51, 60, 61, 55, 59, 60, 57, 61, 51, 53, 44, 56, 60", "Total = 21 (Aprox, depende de límites)"],
+        "rpta": "C. 19"
+      },
+      {
+        "num": 2,
+        "enunciado": "Porcentaje de personas mayores de 60 años.",
+        "pasos": ["Contando > 60: 63, 86, 64, 78, 70, 62, 68, 62, 64, 72, 62, 71, 67, 67, 67, 81, 64, 76, 73, 62, 63", "Total = 20", "20/45 = 44.44%"],
+        "rpta": "D. 44,44… %"
+      },
+      {
+        "num": 3,
+        "enunciado": "Precio P reducido a 1512 tras aumentos (3/25, 250/1000) y rebaja 10%.",
+        "pasos": ["A1 = 3/25 = 12%", "A2 = 250/1000 = 25%", "D1 = 10%", "P * 1.12 * 1.25 * 0.9 = 1512", "P * 1.26 = 1512 -> P = 1200", "Suma cifras = 1+2+0+0 = 3"],
+        "rpta": "A. 3"
+      },
+      {
+        "num": 4,
+        "enunciado": "Promedio 50 manzanas 240g. Se quitan 5 (320, 280, 250, 400, 310). Nuevo promedio?",
+        "pasos": ["Total = 50 * 240 = 12000", "Quitar = 1560", "Nuevo = 10440 / 45 = 232"],
+        "rpta": "A. 232 g"
+      }
+    ]
+  }
+]

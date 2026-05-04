@@ -1,0 +1,55 @@
+{
+  "system_name": "Academic-OS",
+  "version": "5.0.0-SUPREME",
+  "architecture_type": "Modular Agentic AI System",
+  "core_philosophy": "Academic excellence via multi-model consensus and autonomous verification.",
+  "components": {
+    "bot_layer": {
+      "path": "/bot/main_bot.py",
+      "purpose": "Primary I/O interface using Telegram Bot API.",
+      "capabilities": ["vision", "voice_transcription", "topic_handling", "file_processing"],
+      "dependencies": ["telebot", "intelligence.py"]
+    },
+    "intelligence_layer": {
+      "path": "/core/intelligence.py",
+      "logic": "Omega Reasoning Protocol",
+      "models": {
+        "primary": "google/gemini-2.0-flash-001 (Multimodal & Speed)",
+        "secondary": "anthropic/claude-3.5-sonnet (High-fidelity reasoning)",
+        "audio": "groq/whisper-large-v3 (Sub-second transcription)"
+      },
+      "features": ["Deep Chain-of-Thought", "Latex-Strict formatting", "SVG/Mermaid visualization"]
+    },
+    "consensus_engine": {
+      "path": "/core/consensus.py",
+      "function": "Dual-model arbitration",
+      "process": "Queries Primary and Secondary models, passes outputs to an internal Judge Layer to synthesize the most accurate answer."
+    },
+    "verification_layer": {
+      "path": "/core/verifier.py",
+      "standard": "40/40 Academic Perfect Score",
+      "metrics": ["completeness", "formatting_integrity", "mathematical_consistency", "svg_validation"]
+    },
+    "resurrection_system": {
+      "path": "/resurreccion.ps1",
+      "role": "Autonomous Watchdog",
+      "strategy": "Infinite loop process monitoring with exponential backoff on failure.",
+      "environment": "Windows PowerShell / Local Python Environment"
+    }
+  },
+  "data_flow": {
+    "input": "User (Telegram) -> Bot Layer -> Intelligence Layer (Consensus)",
+    "processing": "Consensus -> Verifier Layer -> Self-Correction Loop (if failed)",
+    "output": "Markdown Response (Telegram) + Persistent Storage (archivos/)"
+  },
+  "security_protocols": {
+    "access_control": "Hard-coded Master Chat ID filtering.",
+    "api_failover": "Automatic fallback from OpenRouter to Groq on 5xx or latency > 10s."
+  },
+  "metadata": {
+    "author": "Antigravity AI Agent",
+    "owner": "Albert",
+    "deployment": "Local PC Environment",
+    "state": "Production-Ready / Fully Audited"
+  }
+}

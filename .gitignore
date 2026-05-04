@@ -1,0 +1,24 @@
+# Entornos Virtuales
+browser_bot_env/
+venv/
+env/
+
+# Claves y Variables de Entorno (¡MUY IMPORTANTE!)
+.env
+
+# Bases de datos y archivos generados
+memory.db
+archivos/
+*.pdf
+*.html
+*.ogg
+temp_*
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDEs
+.vscode/
+.idea/
