@@ -15,6 +15,7 @@ from core.llm_provider import llm_provider
 from core.memory import AsyncMemoryDB
 from core.pdf_parser import PDFParser
 from core.router import router
+from aiohttp import web
 
 load_dotenv()
 
@@ -140,10 +141,30 @@ async def handle_input(message):
     except Exception as e:
         await bot.reply_to(message, f"⚠️ Error Crítico: {e}")
 
+async def handle(request):
+    return web.Response(text="Academic-OS Bot is running 24/7!")
+
+async def web_server():
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 8080))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    print(f"🌐 Servidor Web simulado en puerto {port} (Para capa gratuita de Render)")
+    while True:
+        await asyncio.sleep(3600)
+
 async def main():
     await AsyncMemoryDB.init_db()
     print("🛡️ AGENTE @tdsoficialbot EN LÍNEA (ASYNC V5.1) 🛡️")
-    await bot.infinity_polling()
+    
+    # Correr servidor web y bot al mismo tiempo
+    await asyncio.gather(
+        web_server(),
+        bot.infinity_polling()
+    )
 
 if __name__ == "__main__":
     asyncio.run(main())
